@@ -57,6 +57,7 @@ def verificar():
     np.testing.assert_allclose(estudio["GPA promedio"], [2.821, 2.962, 3.121, 3.293, 3.429], atol=0.001)
     print("OK: sintaxis, CSV, IQR, presupuesto de 24 horas y resultados científicos.")
 
+    # Ejecutar desde otra carpeta comprueba que la carga no depende del cwd.
     anterior = Path.cwd()
     os.chdir(RAIZ / "pages")
     try:
@@ -74,11 +75,11 @@ def verificar():
         assert len(app.get("plotly_chart")) == 5
         completos = [grafico.proto.spec for grafico in app.get("plotly_chart")]
         figuras = [json.loads(spec) for spec in completos]
-        assert len(figuras[0]["data"]) == 2
-        assert len(figuras[1]["data"]) == 2
+        assert len(figuras[0]["data"]) == 2  # Histograma + boxplot marginal.
+        assert len(figuras[1]["data"]) == 2  # Scatter + tendencia.
         assert figuras[2]["data"][0]["texttemplate"] == "%{text:.2f}"
         assert figuras[3]["layout"]["xaxis"]["categoryarray"] == ESTRES
-        assert len(figuras[4]["data"]) == 2
+        assert len(figuras[4]["data"]) == 2  # GPA y estudio con unidades distintas.
         for cantidad in range(1, 4):
             for seleccion in itertools.combinations(ESTRES, cantidad):
                 app.multiselect[0].set_value(list(seleccion)).run()
